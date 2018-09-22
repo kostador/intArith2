@@ -112,23 +112,6 @@ public class IntegerArithmetic {
     public static void main(String[] args) {
         IntegerArithmetic program = new IntegerArithmetic();
         program.init();
-        Operation o1 = new Operation();
-        o1.x = "111111";
-        o1.m = "11";
-        o1.radix = "1";
-        ReductionCalculator calc = new ReductionCalculator(o1);
-        calc.calculate();
-        System.out.println(o1.getAnswer());
-        //System.out.println(calc.q);
-        //System.out.println(calc.negRemainder);
-        //System.out.println(calc.oldQuotient);
-        
-        Operation o2 = new Operation();
-        o2.x = "2";
-        o2.m = "3";
-        o2.radix = "10";
-        new InversionCalculator(o2).calculate();
-        System.out.println(o2.getAnswer());
     }
 
 }

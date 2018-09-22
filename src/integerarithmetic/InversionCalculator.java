@@ -38,7 +38,6 @@ public class InversionCalculator extends Calculator {
             Operation reduction = new Operation();
             reduction.x = arrayListToString(x1);
             reduction.m = arrayListToString(m1);
-            //debugArray(m1);
             reduction.radix = o.radix;
             ReductionCalculator calculator = new ReductionCalculator(reduction);
             calculator.calculate();
@@ -63,9 +62,8 @@ public class InversionCalculator extends Calculator {
             a3 = stringToArrayList(subtract.getAnswer());
             a1 = a2;
             a2 = a3;
-            //debugArray(m1);
         }
-        //debugArray(x1);
+        // Add m until answer is positive
         if (x1.get(0).equals("1") && x1.size() == 1) {
             while (a1.get(0).equals("-")) {
                 Operation add = new Operation();
