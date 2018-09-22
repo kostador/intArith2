@@ -69,12 +69,41 @@ public class IntegerArithmetic {
                 case "euclid":
                     calculator = new EuclidCalculator(o);
                     calculator.calculate();
+                    testEuclid(o);
                     break;
             }
         }
         //Print Results
         new OutputCreator(input);
 
+    }
+    
+    void testEuclid(Operation o){
+        String x = o.x;
+        String y = o.y;
+        String a = o.ansA;
+        String b = o.ansB;
+        Operation xa = new Operation();
+        xa.x = x;
+        xa.y = a;
+        xa.radix = o.radix;
+        new MultiplicationCalculator(xa).calculate();
+        Operation yb = new Operation();
+        yb.x = y;
+        yb.y = b;
+        yb.radix = o.radix;
+        new MultiplicationCalculator(yb).calculate();
+        Operation plus = new Operation();
+        plus.x = xa.getAnswer();
+        plus.y = yb.getAnswer();
+        plus.radix = o.radix;
+        plus.type = "add";
+        new AdditionCalculator(plus).calculate();
+        System.out.println("Testing");
+        if(!o.ansD.equals(plus.getAnswer())){
+            throw new IllegalStateException("Euclid is wrong");
+        }
+        
     }
 
     /**
@@ -83,6 +112,23 @@ public class IntegerArithmetic {
     public static void main(String[] args) {
         IntegerArithmetic program = new IntegerArithmetic();
         program.init();
+        Operation o1 = new Operation();
+        o1.x = "111111";
+        o1.m = "11";
+        o1.radix = "1";
+        ReductionCalculator calc = new ReductionCalculator(o1);
+        calc.calculate();
+        System.out.println(o1.getAnswer());
+        //System.out.println(calc.q);
+        //System.out.println(calc.negRemainder);
+        //System.out.println(calc.oldQuotient);
+        
+        Operation o2 = new Operation();
+        o2.x = "2";
+        o2.m = "3";
+        o2.radix = "10";
+        new InversionCalculator(o2).calculate();
+        System.out.println(o2.getAnswer());
     }
 
 }

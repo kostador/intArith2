@@ -12,6 +12,8 @@ package integerarithmetic;
 public class ReductionCalculator extends Calculator {
 
     public String q; // stores the answer for q globally
+    public String oldQuotient;
+    public String negRemainder;
 
     public ReductionCalculator(Operation o) {
         super(o);
@@ -35,74 +37,95 @@ public class ReductionCalculator extends Calculator {
         int n = yArray.length;
         int k = m - n + 1;
         String multiple; // intermediate value for the multiple
-        int[] qArray = new int[k];
         String interimAnswer;
         String interimRemainder;
         String remainder;
+        String quotient;
 
-        if (y.substring(0, 1).equals("-")) {
-            y = y.substring(1, y.length());
-        }
-
-        if (x.substring(0, 1).equals("-")) {
-            remainder = x.substring(1, x.length()); // value for the remainder (initially x)    
-        } else {
+        if (m < n) {
+            quotient = "0";
             remainder = x;
-        }
+            if ((xn && !yn) || (!xn && yn)){
+            Operation addition = new Operation();
+                addition.x = remainder; //
+                addition.y = y;
+                addition.radix = String.valueOf(b);
+                addition.type = "add";
+                new AdditionCalculator(addition).calculate();
+                remainder = addition.getAnswer();
+            }
+            
+        } else {
+            int[] qArray = new int[k];
+            if (y.substring(0, 1).equals("-")) {
+                y = y.substring(1, y.length());
+            }
 
-        for (int i = k - 1; i >= 0; i--) {
-            for (int j = b - 1; j >= 0; j--) {
-                if (j == 0 && b == 1) {
-                    multiple = makeString(1, 1);
-                } else {
-                    multiple = makeString(j, b); // start a string with the base num (9 or F)
-                }
-                if (b != 1) {
-                    multiple = addTailingSigns(multiple, i, "0"); // num of zeros (b^i)*a number
-                } else {
-                    multiple = addTailingSigns(multiple, i, "1");
-                }
-                Operation mul = new Operation();
-                mul.x = multiple;
-                mul.y = y;
-                mul.radix = String.valueOf(b);
-                new MultiplicationCalculator(mul).calculate();
-                interimAnswer = mul.getAnswer(); // value to subtract
-                Operation subtr = new Operation();
-                subtr.x = remainder; //
-                subtr.y = interimAnswer;
-                subtr.radix = String.valueOf(b);
-                subtr.type = "subtract";
-                new AdditionCalculator(subtr).calculate();
-                interimRemainder = subtr.getAnswer();
-                if (!interimRemainder.substring(0, 1).equals("-")) {
-                    qArray[i] = j; // set the quotient to the number that was divided the most
-                    remainder = interimRemainder;
-                    break;
+            if (x.substring(0, 1).equals("-")) {
+                remainder = x.substring(1, x.length()); // value for the remainder (initially x)    
+            } else {
+                remainder = x;
+            }
+
+            for (int i = k - 1; i >= 0; i--) {
+                for (int j = b - 1; j >= 0; j--) {
+                    if (j == 0 && b == 1) {
+                        multiple = makeString(1, 1);
+                    } else {
+                        multiple = makeString(j, b); // start a string with the base num (9 or F)
+                    }
+                    if (b != 1) {
+                        multiple = addTailingSigns(multiple, i, "0"); // num of zeros (b^i)*a number
+                    } else {
+                        multiple = addTailingSigns(multiple, i, "1");
+                    }
+                    Operation mul = new Operation();
+                    mul.x = multiple;
+                    mul.y = y;
+                    mul.radix = String.valueOf(b);
+                    new MultiplicationCalculator(mul).calculate();
+                    interimAnswer = mul.getAnswer(); // value to subtract
+                    Operation subtr = new Operation();
+                    subtr.x = remainder; //
+                    subtr.y = interimAnswer;
+                    subtr.radix = String.valueOf(b);
+                    subtr.type = "subtract";
+                    new AdditionCalculator(subtr).calculate();
+                    interimRemainder = subtr.getAnswer();
+                    if (!interimRemainder.substring(0, 1).equals("-")) {
+                        qArray[i] = j; // set the quotient to the number that was divided the most
+                        remainder = interimRemainder;
+                        break;
+                    }
                 }
             }
-        }
 
-        invertUsingFor(qArray);
-        String quotient = combine(qArray, b);
-        if ((xn && !yn) || (!xn && yn)) { // if both signs are different
-            // both the quotient and the remainder need to be with a "-"
-            quotient = "-" + quotient;
-            Operation subtract = new Operation();
-            subtract.x = quotient; //
-            subtract.y = "1";
-            subtract.radix = String.valueOf(b);
-            subtract.type = "subtract";
-            new AdditionCalculator(subtract).calculate();
-            quotient = subtract.getAnswer();
-            remainder = "-" + remainder;
-            Operation addition = new Operation();
-            addition.x = remainder; //
-            addition.y = y;
-            addition.radix = String.valueOf(b);
-            addition.type = "add";
-            new AdditionCalculator(addition).calculate();
-            remainder = addition.getAnswer();
+            negRemainder = remainder;
+            invertUsingFor(qArray);
+            quotient = combine(qArray, b);
+            oldQuotient = quotient;
+
+            if ((xn && !yn) || (!xn && yn)) { // if both signs are different
+                // both the quotient and the remainder need to be with a "-"
+                quotient = "-" + quotient;
+                this.oldQuotient = quotient.substring(0, quotient.length() - 1);
+                Operation subtract = new Operation();
+                subtract.x = quotient; //
+                subtract.y = "1";
+                subtract.radix = String.valueOf(b);
+                subtract.type = "subtract";
+                new AdditionCalculator(subtract).calculate();
+                quotient = subtract.getAnswer();
+                remainder = "-" + remainder;
+                this.negRemainder = remainder.substring(0, remainder.length() - 1);
+                Operation addition = new Operation();
+                addition.x = remainder; //
+                addition.y = y;
+                addition.radix = String.valueOf(b);
+                addition.type = "add";
+                new AdditionCalculator(addition).calculate();
+                remainder = addition.getAnswer();
+            }
         }
         o.setAnswer(remainder); // the answer is the remainder
         this.q = quotient;
